@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gcm_defaultSenderId" translatable="false">656334956933</string>
+    <string name="google_api_key" translatable="false">AIzaSyD67Ddk4GCT1HxwAaxf2cwJLbruDMxD_iM</string>
+    <string name="google_app_id" translatable="false">1:656334956933:android:15cf82c2917c05540afcec</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyD67Ddk4GCT1HxwAaxf2cwJLbruDMxD_iM</string>
+    <string name="google_storage_bucket" translatable="false">messenger-4b04c.appspot.com</string>
+    <string name="project_id" translatable="false">messenger-4b04c</string>
+</resources>
