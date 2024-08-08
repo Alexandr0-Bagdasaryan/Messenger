@@ -28,7 +28,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewTitle"
-        android:hint="@string/email"
+        android:hint="Email"
         android:layout_margin="20dp"/>
 
     <EditText
@@ -38,18 +38,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editTextEmail"
-        android:hint="@string/password"
+        android:hint="Password"
         android:layout_margin="20dp"/>
 
     <Button
-        android:id="@+id/buttonLogin"
+        android:id="@+id/buttonRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editTextPassword"
         android:layout_margin="20dp"
-        android:text="@string/login"
+        android:text="Register"
         android:textStyle="bold"
         android:textSize="16sp"
         />
@@ -59,18 +59,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        android:text="@string/forgot_password"
+        android:text="Forgot password"
         android:layout_margin="20dp"
-        app:layout_constraintTop_toBottomOf="@id/buttonLogin"/>
+        app:layout_constraintTop_toBottomOf="@id/buttonRegister"/>
 
     <TextView
-        android:id="@+id/textViewRegister"
+        android:id="@+id/textViewLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="@string/register"
+        android:text="Login"
         android:layout_margin="20dp"
-        app:layout_constraintTop_toBottomOf="@id/buttonLogin"/>
+        app:layout_constraintTop_toBottomOf="@id/buttonRegister"/>
 
 
 
