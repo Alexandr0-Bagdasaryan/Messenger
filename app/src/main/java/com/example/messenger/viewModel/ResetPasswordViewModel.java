@@ -3,38 +3,37 @@ package com.example.messenger.viewModel;
 import android.app.Application;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.example.messenger.util.Util;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class ResetPasswordViewModel extends AndroidViewModel {
+public class ResetPasswordViewModel extends ViewModel {
 
     private MutableLiveData<Boolean> emailSend = new MutableLiveData<>();
 
 
-    public MutableLiveData<Boolean> getEmailSend() {
+    public LiveData<Boolean> getEmailSend() {
         return emailSend;
     }
 
-    private MutableLiveData<Boolean> emailCorrect = new MutableLiveData<>();
+    private MutableLiveData<String > error = new MutableLiveData<>();
 
-    public MutableLiveData<Boolean> getEmailCorrect() {
-        return emailCorrect;
+    public LiveData<String> getError() {
+        return error;
     }
 
     private FirebaseAuth auth;
 
-    public ResetPasswordViewModel(@NonNull Application application) {
-        super(application);
+    public ResetPasswordViewModel() {
         auth=FirebaseAuth.getInstance();
     }
 
     public void resetPassword(String email){
-        if (Util.checkEmail(email)) {
             auth.sendPasswordResetEmail(email).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void unused) {
@@ -43,13 +42,9 @@ public class ResetPasswordViewModel extends AndroidViewModel {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    emailSend.setValue(false);
+                    error.setValue(e.getMessage());
                 }
             });
-        }
-        else{
-            emailCorrect.setValue(false);
-        }
     }
 
 }

@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/recyclerViewUsers"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UserActivity">
-
-    <TextView
-        android:id="@+id/textViewGreeting"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_margin="10dp"
-        android:textSize="20sp"
-        android:text="@string/greeting_text"/>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    android:padding="8dp"
+    tools:listitem="@layout/user_item"
+    android:background="@color/rc_bgColor"
+    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+    tools:context=".UserActivity"/>

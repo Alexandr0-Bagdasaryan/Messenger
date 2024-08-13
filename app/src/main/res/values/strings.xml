@@ -8,4 +8,10 @@
     <string name="register">Register</string>
     <string name="forgot_password">Forgot password</string>
     <string name="send_reset_password_mail">Send reset password mail</string>
+    <string name="name">Name</string>
+    <string name="lastname">Lastname</string>
+    <string name="registration">Registration</string>
+    <string name="age">Age</string>
+    <string name="logout">Logout</string>
+    <string name="reset_mail_string">Reset mail successfully send</string>
 </resources>

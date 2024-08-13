@@ -14,11 +14,26 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class RegistrationViewModel extends ViewModel {
+public class LoginViewModel extends ViewModel {
 
-    private FirebaseAuth firebaseAuth;
+    private static final String TAG="MainViewModel";
 
-    private static final String TAG="RegistrationViewModel";
+    public LoginViewModel() {
+        firebaseAuth=FirebaseAuth.getInstance();
+        firebaseAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if(firebaseAuth.getCurrentUser()!=null){
+                    user.setValue(firebaseAuth.getCurrentUser());
+                }
+            }
+        });
+    }
+    private MutableLiveData<FirebaseUser> user = new MutableLiveData<>();
+
+    public LiveData<FirebaseUser> getUser() {
+        return user;
+    }
 
     private MutableLiveData<String> error = new MutableLiveData<>();
 
@@ -26,24 +41,11 @@ public class RegistrationViewModel extends ViewModel {
         return error;
     }
 
-    private MutableLiveData<FirebaseUser> user = new MutableLiveData<>();
+    private FirebaseAuth firebaseAuth;
 
-    public LiveData<FirebaseUser> getUser() {
-        return user;
-    }
-
-    public RegistrationViewModel() {
-        firebaseAuth=FirebaseAuth.getInstance();
-        firebaseAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                user.setValue(firebaseAuth.getCurrentUser());
-            }
-        });
-    }
-
-    public void signUp(String email,String password){
-            firebaseAuth.createUserWithEmailAndPassword(email,password).addOnFailureListener(new OnFailureListener() {
+    public void signInPassword(String email,String password){
+            firebaseAuth.signInWithEmailAndPassword(email,password)
+            .addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Log.d(TAG,"FAIL IN AUTH IN VIEWMODEL");
@@ -51,4 +53,6 @@ public class RegistrationViewModel extends ViewModel {
                 }
             });
     }
+
+
 }
