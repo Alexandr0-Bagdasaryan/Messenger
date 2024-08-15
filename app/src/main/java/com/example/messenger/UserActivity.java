@@ -21,8 +21,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.messenger.adapter.UsersAdapter;
 import com.example.messenger.model.User;
 import com.example.messenger.viewModel.UserViewModel;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +46,16 @@ public class UserActivity extends AppCompatActivity {
     private UsersAdapter usersAdapter;
     private UserViewModel userViewModel;
 
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
         initRecyclerView();
+        firebaseDatabase=FirebaseDatabase.getInstance();
+        databaseReference=firebaseDatabase.getReference("users");
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         userViewModel.getUser().observe(this, new Observer<FirebaseUser>() {
             @Override
@@ -77,11 +92,27 @@ public class UserActivity extends AppCompatActivity {
 
     private void initUsers(){
         List<User> users = new ArrayList<>();
-        for(int i=0;i<30;i++){
-            User user = new User("id","Test ","num ",i,new Random().nextBoolean());
-            users.add(user);
-        }
-        usersAdapter.setUsers(users);
+        boolean check = false;
+        databaseReference.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot:dataSnapshot.getChildren()){
+                    User user = snapshot.getValue(User.class);
+                    Log.d(TAG,user.toString());
+                    users.add(user);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG,e.toString());
+            }
+        }).addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                usersAdapter.setUsers(users);
+            }
+        });
     }
 
     public static Intent newIntent(Context context) {
