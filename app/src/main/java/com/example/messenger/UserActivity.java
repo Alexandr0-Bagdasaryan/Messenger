@@ -56,6 +56,11 @@ public class UserActivity extends AppCompatActivity {
         initRecyclerView();
         firebaseDatabase=FirebaseDatabase.getInstance();
         databaseReference=firebaseDatabase.getReference("users");
+        observeViewModel();
+    }
+
+
+    private void observeViewModel(){
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         userViewModel.getUser().observe(this, new Observer<FirebaseUser>() {
             @Override
@@ -67,7 +72,12 @@ public class UserActivity extends AppCompatActivity {
                 }
             }
         });
-        initUsers();
+        userViewModel.getUserList().observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(List<User> users) {
+                usersAdapter.setUsers(users);
+            }
+        });
     }
 
     private void initRecyclerView() {
@@ -90,30 +100,6 @@ public class UserActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void initUsers(){
-        List<User> users = new ArrayList<>();
-        boolean check = false;
-        databaseReference.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-            @Override
-            public void onSuccess(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot:dataSnapshot.getChildren()){
-                    User user = snapshot.getValue(User.class);
-                    Log.d(TAG,user.toString());
-                    users.add(user);
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG,e.toString());
-            }
-        }).addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                usersAdapter.setUsers(users);
-            }
-        });
-    }
 
     public static Intent newIntent(Context context) {
         return new Intent(context, UserActivity.class);

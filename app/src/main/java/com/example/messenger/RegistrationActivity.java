@@ -46,7 +46,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 String name = Util.getTrimText(editTextName);
                 String lastName = Util.getTrimText(editTextLastName);
                 int age = Integer.parseInt(Util.getTrimText(editTextAge));
-                registrationViewModel.signUp(email, password);
+                registrationViewModel.signUp(email, password,name,lastName,age);
             }
         });
     }
