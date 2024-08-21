@@ -42,25 +42,32 @@ public class UserActivity extends AppCompatActivity {
 
     private static final String TAG = "UserActivity";
 
+    private static String EXTRA_CURRENT_USER_ID = "currentId";
+
     private RecyclerView recyclerViewUsers;
     private UsersAdapter usersAdapter;
     private UserViewModel userViewModel;
 
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
         initRecyclerView();
-        firebaseDatabase=FirebaseDatabase.getInstance();
-        databaseReference=firebaseDatabase.getReference("users");
         observeViewModel();
+        String currId = getIntent().getStringExtra(EXTRA_CURRENT_USER_ID);
+        usersAdapter.setOnUserClick(new UsersAdapter.OnUserClick() {
+            @Override
+            public void click(User user) {
+                String currId = FirebaseAuth.getInstance().getUid();
+                Intent intent = ChatActivity.newIntent(UserActivity.this, currId, user.getId());
+                startActivity(intent);
+            }
+        });
     }
 
 
-    private void observeViewModel(){
+    private void observeViewModel() {
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         userViewModel.getUser().observe(this, new Observer<FirebaseUser>() {
             @Override
@@ -101,8 +108,10 @@ public class UserActivity extends AppCompatActivity {
     }
 
 
-    public static Intent newIntent(Context context) {
-        return new Intent(context, UserActivity.class);
+    public static Intent newIntent(Context context, String currId) {
+        Intent intent = new Intent(context, UserActivity.class);
+        intent.putExtra(EXTRA_CURRENT_USER_ID,currId);
+        return intent;
     }
 
 }

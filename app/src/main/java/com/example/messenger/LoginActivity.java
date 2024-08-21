@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
                                     "Authorized",
                                     Toast.LENGTH_SHORT)
                             .show();
-                    Intent intent = UserActivity.newIntent(LoginActivity.this);
+                    Intent intent = UserActivity.newIntent(LoginActivity.this,firebaseUser.getUid());
                     startActivity(intent);
                     finish();
                 }
