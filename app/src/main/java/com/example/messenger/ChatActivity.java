@@ -2,21 +2,29 @@ package com.example.messenger;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.adapter.MessagesAdapter;
 import com.example.messenger.model.Message;
+import com.example.messenger.model.User;
+import com.example.messenger.viewModel.ChatViewModel;
+import com.example.messenger.viewModel.ChatViewModelFactory;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -44,6 +52,9 @@ public class ChatActivity extends AppCompatActivity {
     private String currentUserId;
     private String otherUserId;
 
+    private ChatViewModel chatViewModel;
+    private ChatViewModelFactory chatViewModelFactory;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +64,64 @@ public class ChatActivity extends AppCompatActivity {
         recyclerViewChat.setAdapter(messagesAdapter);
         currentUserId = getIntent().getStringExtra(EXTRA_CURRENT_USER_ID);
         otherUserId = getIntent().getStringExtra(EXTRA_OTHER_USER_ID);
+        chatViewModelFactory = new ChatViewModelFactory(currentUserId,otherUserId);
+        chatViewModel= new ViewModelProvider(this,chatViewModelFactory).get(ChatViewModel.class);
         messagesAdapter = new MessagesAdapter(currentUserId);
         recyclerViewChat.setAdapter(messagesAdapter);
-        initMessages();
+        observeViewModels();
+        imageViewSendMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String messageText = editTextMessage.getText().toString();
+                Message message = new Message(messageText,currentUserId,otherUserId);
+                if (!messageText.isEmpty()){
+                    chatViewModel.sendMessage(message);
+                }
+            }
+        });
+    }
+
+
+    private void observeViewModels(){
+        chatViewModel.getMessages().observe(this, new Observer<List<Message>>() {
+            @Override
+            public void onChanged(List<Message> messages) {
+                messagesAdapter.setMessages(messages);
+            }
+        });
+        chatViewModel.getOtherUser().observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                textViewUser.setText(String.format("%s %s",user.getName(),user.getLastName()));
+                int resId;
+                if (user.isOnline()) {
+                    resId = R.drawable.circle_online;
+                } else {
+                    resId = R.drawable.circle_offline;
+                }
+                Drawable drawable = ContextCompat.getDrawable(ChatActivity.this, resId);
+                userStatus.setBackground(drawable);;
+            }
+        });
+        chatViewModel.getMessageSent().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean send) {
+                if(send){
+                    editTextMessage.setText("");
+                    Toast.makeText(ChatActivity.this,
+                            "Message send successful!",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        chatViewModel.getError().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String error) {
+                Toast.makeText(ChatActivity.this,
+                        error,
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void initViews() {
@@ -84,5 +150,17 @@ public class ChatActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_CURRENT_USER_ID, currId);
         intent.putExtra(EXTRA_OTHER_USER_ID, otherId);
         return intent;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        chatViewModel.setUserOnline(true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        chatViewModel.setUserOnline(false);
     }
 }

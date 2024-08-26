@@ -61,8 +61,14 @@ public class UserViewModel extends ViewModel {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<User> users = new ArrayList<>();
                 FirebaseUser currentUser = auth.getCurrentUser();
+                if (currentUser==null){
+                    return;
+                }
                 for (DataSnapshot dataSnapshot:snapshot.getChildren()){
                     User user = dataSnapshot.getValue(User.class);
+                    if (user==null){
+                        return;
+                    }
                     if(!user.getId().equals(currentUser.getUid())) {
                         users.add(user);
                     }
@@ -79,7 +85,15 @@ public class UserViewModel extends ViewModel {
 
 
     public void logout() {
+        setUserOnline(false);
         auth.signOut();
+    }
+
+    public void setUserOnline(boolean isOnline){
+        FirebaseUser firebaseUser = auth.getCurrentUser();
+        if (firebaseUser == null) return;
+        databaseReference.child(firebaseUser.getUid())
+                .child("online").setValue(isOnline);
     }
 
 }

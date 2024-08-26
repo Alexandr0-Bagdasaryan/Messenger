@@ -15,6 +15,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -114,4 +115,15 @@ public class UserActivity extends AppCompatActivity {
         return intent;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        userViewModel.setUserOnline(true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        userViewModel.setUserOnline(false);
+    }
 }
